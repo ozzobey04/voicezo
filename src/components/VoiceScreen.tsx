@@ -87,6 +87,13 @@ export default function VoiceScreen({
                       <div className={s.cardBottom}>
                         <p className={s.cardName}>{p.label}</p>
                         <p className={s.cardDesc}>{p.desc}</p>
+                        {p.voiceSettings && (
+                          <div className={s.cardTags}>
+                            <span className={s.cardTag}>S {Math.round(p.voiceSettings.stability * 100)}</span>
+                            <span className={s.cardTag}>B {Math.round(p.voiceSettings.similarity * 100)}</span>
+                            <span className={s.cardTag}>ST {Math.round(p.voiceSettings.style * 100)}</span>
+                          </div>
+                        )}
                       </div>
                       {isActive && <span className={s.activeCheck} style={{ background: p.color }}>✓</span>}
                     </button>

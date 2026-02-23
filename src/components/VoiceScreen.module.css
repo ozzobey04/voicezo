@@ -203,6 +203,23 @@
   font-weight: 700;
 }
 
+.cardTags {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.cardTag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 2px 5px;
+  letter-spacing: 0.04em;
+}
+
 /* ── EL Voices tab ── */
 .searchRow {
   display: flex;

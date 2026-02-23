@@ -76,14 +76,14 @@ export default function App() {
   const handleTestVoice = useCallback(async (blob: Blob): Promise<string | null> => {
     const voiceId = customVoiceId ?? activePreset.elVoiceId
     if (!voiceId || !apiKey) return null
-    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings)
+    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings, activePreset.voiceSettings)
     if (!ab) return null
-    const audioBlob = new Blob([ab], { type: 'audio/mpeg' })
-    return URL.createObjectURL(audioBlob)
+    return URL.createObjectURL(new Blob([ab], { type: 'audio/mpeg' }))
   }, [customVoiceId, activePreset, apiKey, stsSettings])
 
   const handleLabTest = async (blob: Blob, voiceId: string): Promise<string | null> => {
-    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings)
+    const preset = VOICE_PRESETS.find(p => p.elVoiceId === voiceId)
+    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings, preset?.voiceSettings ?? null)
     if (!ab) return null
     return URL.createObjectURL(new Blob([ab], { type: 'audio/mpeg' }))
   }

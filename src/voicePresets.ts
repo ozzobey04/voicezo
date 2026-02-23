@@ -4,66 +4,95 @@ export type VoicePresetId =
   | 'adam' | 'derin'
   | 'cocuk'
 
+export interface VoicePresetSettings {
+  stability:   number
+  similarity:  number
+  style:       number
+}
+
 export interface VoicePreset {
-  id:        VoicePresetId
-  label:     string
-  emoji:     string
-  desc:      string
-  category:  'female' | 'male' | 'special'
-  color:     string
-  elVoiceId: string | null
-  pitch:     number
-  robot:     boolean
-  ringFreq:  number
+  id:            VoicePresetId
+  label:         string
+  emoji:         string
+  desc:          string
+  category:      'female' | 'male' | 'special'
+  color:         string
+  elVoiceId:     string | null
+  voiceSettings: VoicePresetSettings | null
+  pitch:         number
+  robot:         boolean
+  ringFreq:      number
 }
 
 export const VOICE_PRESETS: VoicePreset[] = [
   // ── KADIN SESLERİ ──────────────────────────────────────────────────
+  // Rachel: Sakin, profesyonel — düşük stabilite = insan gibi küçük titremeler
   {
     id: 'rachel', label: 'Rachel', emoji: '👩', desc: 'Sakin & profesyonel',
     category: 'female', color: '#e879f9',
-    elVoiceId: '21m00Tcm4TlvDq8ikWAM', pitch: 1.55, robot: false, ringFreq: 0,
+    elVoiceId: '21m00Tcm4TlvDq8ikWAM',
+    voiceSettings: { stability: 0.12, similarity: 0.93, style: 0.18 },
+    pitch: 1.55, robot: false, ringFreq: 0,
   },
+  // Bella: Yumuşak, genç — çok doğal, yüksek benzerlik
   {
     id: 'bella', label: 'Bella', emoji: '🌸', desc: 'Yumuşak & genç',
     category: 'female', color: '#f472b6',
-    elVoiceId: 'EXAVITQu4vr4xnSDxMaL', pitch: 1.6, robot: false, ringFreq: 0,
+    elVoiceId: 'EXAVITQu4vr4xnSDxMaL',
+    voiceSettings: { stability: 0.10, similarity: 0.95, style: 0.12 },
+    pitch: 1.6, robot: false, ringFreq: 0,
   },
+  // Elli: Genç, duygusal — stil yüksek, çok canlı
   {
-    id: 'elli', label: 'Elli', emoji: '✨', desc: 'Parlak & duygusal',
+    id: 'elli', label: 'Elli', emoji: '✨', desc: 'Canlı & duygusal',
     category: 'female', color: '#fb923c',
-    elVoiceId: 'MF3mGyEYCl7XYWbV9V6O', pitch: 1.7, robot: false, ringFreq: 0,
+    elVoiceId: 'MF3mGyEYCl7XYWbV9V6O',
+    voiceSettings: { stability: 0.08, similarity: 0.90, style: 0.30 },
+    pitch: 1.7, robot: false, ringFreq: 0,
   },
+  // Dorothy: Sıcak, olgun — biraz daha stabil ama yine doğal
   {
     id: 'dorothy', label: 'Dorothy', emoji: '🌷', desc: 'Sıcak & olgun',
     category: 'female', color: '#f59e0b',
-    elVoiceId: 'ThT5KcBeYPX3keUQqHPh', pitch: 1.45, robot: false, ringFreq: 0,
+    elVoiceId: 'ThT5KcBeYPX3keUQqHPh',
+    voiceSettings: { stability: 0.15, similarity: 0.92, style: 0.15 },
+    pitch: 1.45, robot: false, ringFreq: 0,
   },
+  // Charlotte: Otoriter, İngiliz — stil orta, berraklık öncelikli
   {
-    id: 'charlotte', label: 'Charlotte', emoji: '👑', desc: 'İngiliz & güçlü',
+    id: 'charlotte', label: 'Charlotte', emoji: '👑', desc: 'Güçlü & etkileyici',
     category: 'female', color: '#a78bfa',
-    elVoiceId: 'XB0fDUnXU5powFXDhCwa', pitch: 1.5, robot: false, ringFreq: 0,
+    elVoiceId: 'XB0fDUnXU5powFXDhCwa',
+    voiceSettings: { stability: 0.13, similarity: 0.91, style: 0.22 },
+    pitch: 1.5, robot: false, ringFreq: 0,
   },
   // ── ERKEK SESLERİ ──────────────────────────────────────────────────
   {
-    id: 'adam', label: 'Adam', emoji: '👨', desc: 'Klasik & derin',
+    id: 'adam', label: 'Adam', emoji: '👨', desc: 'Klasik & güvenilir',
     category: 'male', color: '#38bdf8',
-    elVoiceId: 'pNInz6obpgDQGcFmaJgB', pitch: 0.72, robot: false, ringFreq: 0,
+    elVoiceId: 'pNInz6obpgDQGcFmaJgB',
+    voiceSettings: { stability: 0.20, similarity: 0.90, style: 0.12 },
+    pitch: 0.72, robot: false, ringFreq: 0,
   },
   {
     id: 'derin', label: 'Derin', emoji: '🌑', desc: 'Bas & güçlü',
     category: 'male', color: '#475569',
-    elVoiceId: 'VR6AewLTigWG4xSOukaG', pitch: 0.58, robot: false, ringFreq: 0,
+    elVoiceId: 'VR6AewLTigWG4xSOukaG',
+    voiceSettings: { stability: 0.25, similarity: 0.88, style: 0.08 },
+    pitch: 0.58, robot: false, ringFreq: 0,
   },
   // ── ÖZEL ──────────────────────────────────────────────────────────
   {
     id: 'cocuk', label: 'Çocuk', emoji: '🧒', desc: 'Tiz & eğlenceli',
     category: 'special', color: '#4ade80',
-    elVoiceId: 'AZnzlk1XvdvUeBnXmlld', pitch: 1.85, robot: false, ringFreq: 0,
+    elVoiceId: 'AZnzlk1XvdvUeBnXmlld',
+    voiceSettings: { stability: 0.10, similarity: 0.88, style: 0.35 },
+    pitch: 1.85, robot: false, ringFreq: 0,
   },
   {
     id: 'normal', label: 'Ham Ses', emoji: '🎙', desc: 'Dönüşüm yok',
     category: 'special', color: '#64748b',
-    elVoiceId: null, pitch: 1.0, robot: false, ringFreq: 0,
+    elVoiceId: null, voiceSettings: null,
+    pitch: 1.0, robot: false, ringFreq: 0,
   },
 ]
