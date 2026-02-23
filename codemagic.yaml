@@ -50,12 +50,8 @@ workflows:
 
       - name: Ensure Podfile
         script: |
-          if [ ! -f ios/App/Podfile ]; then
-            echo "Podfile missing - copying from ios-template"
-            cp ios-template/Podfile ios/App/Podfile
-          else
-            echo "Podfile already exists"
-          fi
+          echo "Overwriting Podfile with correct template"
+          cp ios-template/Podfile ios/App/Podfile
           cat ios/App/Podfile
 
       - name: Capacitor sync iOS
