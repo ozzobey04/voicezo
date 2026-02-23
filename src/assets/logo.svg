@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Female silhouette - vulva shape -->
+  <path d="M100 60 C85 60 72 75 72 95 C72 118 85 135 100 140 C115 135 128 118 128 95 C128 75 115 60 100 60 Z" fill="currentColor" opacity="0.85"/>
+  <!-- Male silhouette - phallus penetrating -->
+  <rect x="93" y="30" width="14" height="80" rx="7" ry="7" fill="currentColor" opacity="0.9"/>
+  <ellipse cx="100" cy="30" rx="9" ry="10" fill="currentColor" opacity="0.9"/>
+  <!-- Merge/interlock accent -->
+  <path d="M100 140 C85 135 72 118 72 95" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+  <path d="M100 140 C115 135 128 118 128 95" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+</svg>

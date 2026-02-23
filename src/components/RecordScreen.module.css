@@ -1,0 +1,231 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 20px;
+  padding-bottom: 100px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ── Büyük kayıt butonu ── */
+.recArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0 8px;
+}
+
+.bigBtn {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg2);
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: border-color 200ms, background 200ms, box-shadow 200ms, color 200ms;
+}
+
+.bigBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.bigBtn:not(:disabled):hover {
+  border-color: rgba(239,68,68,0.5);
+  box-shadow: 0 0 30px rgba(239,68,68,0.12);
+  color: rgba(255,255,255,0.8);
+}
+
+.bigBtn.recording {
+  border-color: var(--red);
+  background: rgba(239,68,68,0.08);
+  color: var(--red);
+  box-shadow: 0 0 50px rgba(239,68,68,0.2);
+  animation: recGlow 1.2s ease-in-out infinite;
+}
+
+@keyframes recGlow {
+  50% { box-shadow: 0 0 80px rgba(239,68,68,0.35); }
+}
+
+.bigBtnIcon  { font-size: 2.2rem; line-height: 1; }
+.bigBtnLabel { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--red);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.timerDot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: blink .6s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── İsimlendirme kartı ── */
+.nameCard {
+  background: var(--bg2);
+  border: 1px solid rgba(108,99,255,0.25);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeUp 200ms ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+.nameTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.audio {
+  width: 100%;
+  height: 36px;
+  accent-color: var(--accent);
+}
+
+.nameRow {
+  display: flex;
+  gap: 8px;
+}
+
+.nameInput {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 200ms;
+}
+
+.nameInput::placeholder { color: var(--muted); }
+.nameInput:focus { border-color: rgba(108,99,255,0.5); }
+
+.saveBtn {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: opacity 200ms;
+}
+
+.saveBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── Liste ── */
+.listTitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.list { display: flex; flex-direction: column; gap: 10px; }
+
+.item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.itemTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.itemAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(108,99,255,0.15);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.itemInfo { flex: 1; }
+.itemName { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+.itemMeta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+.deleteBtn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: color 150ms, border-color 150ms;
+}
+
+.deleteBtn:hover { color: var(--red); border-color: rgba(239,68,68,0.4); }
+
+.cloneBtn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(108,99,255,0.25);
+  background: rgba(108,99,255,0.07);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 200ms, opacity 200ms;
+}
+
+.cloneBtn:not(:disabled):hover { background: rgba(108,99,255,0.14); }
+.cloneBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.noKey {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  padding: 40px 0;
+}

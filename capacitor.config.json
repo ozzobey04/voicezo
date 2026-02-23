@@ -1,0 +1,19 @@
+{
+  "appId": "com.voicezo.app",
+  "appName": "VOICEZO",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "android": {
+    "minWebViewVersion": 60,
+    "allowMixedContent": false,
+    "backgroundColor": "#0a0a0a"
+  }
+}

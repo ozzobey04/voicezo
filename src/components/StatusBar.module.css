@@ -1,0 +1,37 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #333;
+  transition: background 300ms;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  transition: color 300ms;
+}
+
+.connected .dot  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.connected .label { color: rgba(255,255,255,0.5); }
+
+.calling .dot    { background: rgba(255,255,255,0.4); animation: blink .8s step-end infinite; }
+.calling .label  { color: rgba(255,255,255,0.5); }
+
+.incoming .dot   { background: white; animation: blink .5s step-end infinite; }
+.incoming .label { color: rgba(255,255,255,0.6); }
+
+.error .dot      { background: var(--danger); }
+.error .label    { color: var(--danger); }
+
+.idle .dot       { animation: blink 1.5s step-end infinite; }
+
+@keyframes blink { 50% { opacity: 0; } }

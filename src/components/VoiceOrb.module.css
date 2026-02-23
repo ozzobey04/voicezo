@@ -1,0 +1,108 @@
+.scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.node {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 80ms ease-out, border-color 300ms, color 300ms, box-shadow 300ms;
+}
+
+.node svg {
+  width: 22px;
+  height: 22px;
+}
+
+.nodeActive {
+  border-color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.7);
+  box-shadow: 0 0 20px rgba(255,255,255,0.08);
+}
+
+.line {
+  width: 48px;
+  height: 1px;
+  background: var(--border);
+  transition: background 400ms;
+  flex-shrink: 0;
+}
+
+.lineActive {
+  background: rgba(255,255,255,0.35);
+  box-shadow: 0 0 8px rgba(255,255,255,0.2);
+}
+
+.lineCalling {
+  background: rgba(255,255,255,0.15);
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+.orbWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  transition: transform 80ms ease-out, opacity 150ms ease;
+  pointer-events: none;
+}
+
+.orb {
+  position: relative;
+  z-index: 2;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 80ms ease-out, border-color 300ms, color 300ms, box-shadow 300ms;
+}
+
+.orb svg {
+  width: 32px;
+  height: 32px;
+}
+
+.orbActive {
+  border-color: rgba(255,255,255,0.5);
+  color: white;
+  box-shadow: 0 0 40px rgba(255,255,255,0.1);
+}
+
+.orbCalling {
+  border-color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+  animation: breathe 1.4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0px rgba(255,255,255,0.05); }
+  50%       { box-shadow: 0 0 30px rgba(255,255,255,0.12); }
+}
