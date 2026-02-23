@@ -69,6 +69,13 @@ function fmt(n: number) {
   return `${String(Math.floor(n / 60)).padStart(2,'0')}:${String(n % 60).padStart(2,'0')}`
 }
 
+function downloadFile(url: string, filename: string) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+}
+
 export default function LabScreen({ apiKey, onTest }: Props) {
   const [recordings, setRecordings] = useState<SavedRecording[]>([])
   const [selId, setSelId]           = useState<string | null>(null)
@@ -266,6 +273,11 @@ export default function LabScreen({ apiKey, onTest }: Props) {
                 </div>
                 <div className={s.recRowRight} onClick={e => e.stopPropagation()}>
                   <audio controls src={r.audioBase64} className={s.recAudio}/>
+                  <button
+                    className={s.dlBtn}
+                    onClick={() => downloadFile(r.audioBase64, `${r.name}.webm`)}
+                    title="İndir"
+                  >↓</button>
                   <button className={s.delBtn} onClick={e => deleteRec(r.id, e)}>✕</button>
                 </div>
               </div>
@@ -360,6 +372,11 @@ export default function LabScreen({ apiKey, onTest }: Props) {
                         >
                           {playing === vid ? '▶ Çalıyor...' : '▶ Dinle'}
                         </button>
+                        <button
+                          className={s.dlBtn}
+                          onClick={() => downloadFile(r.url!, `${selRec?.name ?? 'kayit'}_${p.label}.mp3`)}
+                          title="İndir"
+                        >↓</button>
                         <button className={s.reBtn} onClick={() => convert(vid)} disabled={!apiKey} title="Yeniden dönüştür">↺</button>
                       </div>
                     )}
