@@ -45,34 +45,16 @@ workflows:
         script: |
           rm -rf ios
           npx cap add ios
-          echo "=== ios/App contents after cap add ==="
+          echo "=== ios/App contents ==="
           ls -la ios/App/ || echo "WARN: ios/App not found"
 
       - name: Ensure Podfile
         script: |
           if [ ! -f ios/App/Podfile ]; then
-            echo "Podfile missing - writing standard Capacitor Podfile"
-            mkdir -p ios/App
-            cat > ios/App/Podfile << 'EOF'
-require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
-
-platform :ios, '14.0'
-use_frameworks!
-
-install! 'cocoapods', :disable_input_output_paths => true
-
-def capacitor_pods
-  pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-end
-
-target 'App' do
-  capacitor_pods
-end
-EOF
-            echo "Podfile written."
+            echo "Podfile missing - copying from ios-template"
+            cp ios-template/Podfile ios/App/Podfile
           else
-            echo "Podfile already exists."
+            echo "Podfile already exists"
           fi
           cat ios/App/Podfile
 
