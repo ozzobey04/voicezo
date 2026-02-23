@@ -4,7 +4,7 @@ import BottomNav from './components/BottomNav'
 import CallScreen from './components/CallScreen'
 import VoiceScreen from './components/VoiceScreen'
 import RecordScreen from './components/RecordScreen'
-import LibraryScreen from './components/LibraryScreen'
+import LabScreen from './components/LabScreen'
 import SettingsScreen from './components/SettingsScreen'
 import IncomingCall from './components/IncomingCall'
 import { useVoiceChat } from './hooks/useVoiceChat'
@@ -17,7 +17,7 @@ import type { VoicePresetId } from './voicePresets'
 import './App.css'
 
 const DEFAULT_KEY = 'sk_e448dded4b4b84d602851bc889fb9537a28ac353f518e226'
-type Tab = 'call' | 'voice' | 'record' | 'library' | 'settings'
+type Tab = 'call' | 'voice' | 'record' | 'lab' | 'settings'
 
 function initKey() {
   const stored = localStorage.getItem('el_key')
@@ -45,7 +45,7 @@ export default function App() {
 
   const {
     voices, loading: elLoad, error: elErr,
-    fetchVoices, fetchSharedVoices, cloneVoice,
+    fetchVoices, cloneVoice,
   } = useElevenLabs(apiKey)
 
   const {
@@ -81,6 +81,12 @@ export default function App() {
     const audioBlob = new Blob([ab], { type: 'audio/mpeg' })
     return URL.createObjectURL(audioBlob)
   }, [customVoiceId, activePreset, apiKey, stsSettings])
+
+  const handleLabTest = async (blob: Blob, voiceId: string): Promise<string | null> => {
+    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings)
+    if (!ab) return null
+    return URL.createObjectURL(new Blob([ab], { type: 'audio/mpeg' }))
+  }
 
   return (
     <div className="app">
@@ -139,14 +145,13 @@ export default function App() {
             cloning={elLoad}
           />
         )}
-        {tab === 'library' && (
-          <LibraryScreen
-            voices={voices}
-            loading={elLoad}
-            error={elErr}
-            onFetch={fetchVoices}
-            onFetchShared={fetchSharedVoices}
-            hasKey={!!apiKey}
+        {tab === 'lab' && (
+          <LabScreen
+            apiKey={apiKey}
+            elVoices={voices}
+            onFetchVoices={fetchVoices}
+            elLoading={elLoad}
+            onTest={handleLabTest}
           />
         )}
         {tab === 'settings' && (
