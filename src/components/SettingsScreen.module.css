@@ -253,6 +253,31 @@
   cursor: pointer;
 }
 
+.langGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.langBtn {
+  padding: 9px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 200ms, background 200ms;
+  text-align: center;
+}
+
+.langBtn.langActive {
+  border-color: var(--accent);
+  background: rgba(108,99,255,0.1);
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* About */
 .aboutGrid {
   display: flex;

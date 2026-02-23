@@ -18,8 +18,17 @@ const CHUNK_OPTIONS = [
 ]
 
 const MODEL_OPTIONS = [
-  { value: 'eleven_english_sts_v2',       label: 'İngilizce v2',       desc: 'Hızlı, İngilizce optimize' },
-  { value: 'eleven_multilingual_sts_v2',  label: 'Çok Dilli v2',       desc: 'Türkçe dahil tüm diller' },
+  { value: 'eleven_multilingual_sts_v2',  label: 'Çok Dilli v2 (Önerilen)', desc: 'Türkçe dahil 29 dil — en doğal sonuç' },
+  { value: 'eleven_english_sts_v2',       label: 'İngilizce v2',            desc: 'Sadece İngilizce, biraz daha hızlı' },
+]
+
+const LANG_OPTIONS = [
+  { value: 'tr', label: '🇹🇷 Türkçe' },
+  { value: 'en', label: '🇺🇸 İngilizce' },
+  { value: 'de', label: '🇩🇪 Almanca' },
+  { value: 'fr', label: '🇫🇷 Fransızca' },
+  { value: 'es', label: '🇪🇸 İspanyolca' },
+  { value: 'ar', label: '🇸🇦 Arapça' },
 ]
 
 export default function SettingsScreen({
@@ -131,8 +140,8 @@ export default function SettingsScreen({
         <div className={s.cardHeader}>
           <span className={s.cardIcon}>🧠</span>
           <div>
-            <p className={s.cardTitle}>AI Modeli</p>
-            <p className={s.cardDesc}>Türkçe konuşuyorsan Çok Dilli seç</p>
+            <p className={s.cardTitle}>AI Modeli & Dil</p>
+            <p className={s.cardDesc}>Türkçe için Çok Dilli + Türkçe seçili olsun</p>
           </div>
         </div>
         <div className={s.optionGroup}>
@@ -144,6 +153,18 @@ export default function SettingsScreen({
             >
               <span className={s.optionLabel}>{o.label}</span>
               <span className={s.optionDesc}>{o.desc}</span>
+            </button>
+          ))}
+        </div>
+        <p className={s.cardDesc} style={{ paddingTop: 4 }}>Konuşma Dili</p>
+        <div className={s.langGrid}>
+          {LANG_OPTIONS.map(l => (
+            <button
+              key={l.value}
+              className={`${s.langBtn} ${stsSettings.languageCode === l.value ? s.langActive : ''}`}
+              onClick={() => update({ languageCode: l.value })}
+            >
+              {l.label}
             </button>
           ))}
         </div>

@@ -3,28 +3,45 @@ import type { VoicePreset } from '../voicePresets'
 const EL_BASE = 'https://api.elevenlabs.io/v1'
 
 export interface STSSettings {
-  stability:   number
-  similarity:  number
-  chunkMs:     number
-  model:       string
+  stability:    number
+  similarity:   number
+  chunkMs:      number
+  model:        string
+  languageCode: string
 }
 
 export const DEFAULT_STS: STSSettings = {
-  stability:  0.5,
-  similarity: 0.8,
-  chunkMs:    2500,
-  model:      'eleven_english_sts_v2',
+  stability:    0.25,
+  similarity:   0.9,
+  chunkMs:      2500,
+  model:        'eleven_multilingual_sts_v2',
+  languageCode: 'tr',
 }
 
 export function loadSTSSettings(): STSSettings {
   try {
     const s = localStorage.getItem('sts_settings')
-    return s ? { ...DEFAULT_STS, ...JSON.parse(s) } : DEFAULT_STS
+    if (!s) return DEFAULT_STS
+    const parsed = JSON.parse(s)
+    // Migrate: eğer eski kayıtta İngilizce model varsa multilingual'a geç
+    if (parsed.model === 'eleven_english_sts_v2') {
+      parsed.model = 'eleven_multilingual_sts_v2'
+    }
+    return { ...DEFAULT_STS, ...parsed }
   } catch { return DEFAULT_STS }
 }
 
 export function saveSTSSettings(s: STSSettings) {
   localStorage.setItem('sts_settings', JSON.stringify(s))
+}
+
+function buildVoiceSettings(cfg: STSSettings) {
+  return JSON.stringify({
+    stability:        cfg.stability,
+    similarity_boost: cfg.similarity,
+    style:            0.0,
+    use_speaker_boost: true,
+  })
 }
 
 export async function stsOnce(
@@ -35,7 +52,8 @@ export async function stsOnce(
     const form = new FormData()
     form.append('audio', blob, 'sample.webm')
     form.append('model_id', cfg.model)
-    form.append('voice_settings', JSON.stringify({ stability: cfg.stability, similarity_boost: cfg.similarity }))
+    form.append('voice_settings', buildVoiceSettings(cfg))
+    if (cfg.languageCode) form.append('language_code', cfg.languageCode)
     const res = await fetch(`${EL_BASE}/speech-to-speech/${voiceId}/stream`, {
       method: 'POST',
       headers: { 'xi-api-key': apiKey },
@@ -63,17 +81,7 @@ export async function buildSTSChain(
 
   if (!apiKey || !preset.elVoiceId) {
     const src = ctx.createMediaStreamSource(rawStream)
-    if (preset.robot) {
-      const osc = ctx.createOscillator()
-      osc.frequency.value = preset.ringFreq
-      const ring = ctx.createGain()
-      osc.connect(ring.gain)
-      osc.start()
-      src.connect(ring)
-      ring.connect(dest)
-    } else {
-      src.connect(dest)
-    }
+    src.connect(dest)
     return { processedStream: dest.stream, stop: () => ctx.close() }
   }
 
@@ -98,7 +106,8 @@ export async function buildSTSChain(
       const form = new FormData()
       form.append('audio', blob, 'chunk.webm')
       form.append('model_id', cfg.model)
-      form.append('voice_settings', JSON.stringify({ stability: cfg.stability, similarity_boost: cfg.similarity }))
+      form.append('voice_settings', buildVoiceSettings(cfg))
+      if (cfg.languageCode) form.append('language_code', cfg.languageCode)
 
       const res = await fetch(`${EL_BASE}/speech-to-speech/${preset.elVoiceId}/stream`, {
         method: 'POST',
