@@ -96,9 +96,12 @@ export default function App() {
 
       <header className="header">
         <Logo />
-        <span style={{ fontSize: '0.7rem', color: 'var(--muted)', letterSpacing: '0.08em' }}>
-          {customVoiceName ? `✦ ${customVoiceName}` : `${activePreset.emoji} ${activePreset.label}`}
-        </span>
+        <div className="headerVoice">
+          <span className="headerVoiceDot"/>
+          <span className="headerVoiceText">
+            {customVoiceName ?? `${activePreset.emoji} ${activePreset.label}`}
+          </span>
+        </div>
       </header>
 
       <div className="content">

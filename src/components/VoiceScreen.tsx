@@ -20,68 +20,101 @@ interface Props {
 export default function VoiceScreen({
   activePresetId, activeCustomId, activeCustomName,
   onSelectPreset, onSelectCustom,
-  elVoices, elLoading, elError, onFetchVoices,
-  hasKey,
+  elVoices, elLoading, elError, onFetchVoices, hasKey,
 }: Props) {
   const [tab,    setTab]    = useState<'preset' | 'el'>('preset')
   const [search, setSearch] = useState('')
   const previewRef = useRef<HTMLAudioElement | null>(null)
 
-  const filteredVoices = elVoices.filter(v =>
-    v.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const femaleVoices  = VOICE_PRESETS.filter(p => p.category === 'female')
+  const otherVoices   = VOICE_PRESETS.filter(p => p.category !== 'female')
+  const filteredVoices = elVoices.filter(v => v.name.toLowerCase().includes(search.toLowerCase()))
 
   const playPreview = (url: string | null) => {
     if (!url) return
-    if (previewRef.current) { previewRef.current.pause() }
+    previewRef.current?.pause()
     previewRef.current = new Audio(url)
     previewRef.current.play()
   }
 
-  const activeLabel = activeCustomId
-    ? `✦ ${activeCustomName ?? 'Özel ses'}`
-    : `${VOICE_PRESETS.find(p => p.id === activePresetId)?.emoji} ${VOICE_PRESETS.find(p => p.id === activePresetId)?.label}`
+  const activePreset = VOICE_PRESETS.find(p => p.id === activePresetId)!
+  const activeLabel  = activeCustomId
+    ? `${activeCustomName ?? 'Özel ses'}`
+    : `${activePreset.emoji} ${activePreset.label}`
 
   return (
     <div className={s.screen}>
       <div className={s.tabs}>
         <button className={`${s.tab} ${tab === 'preset' ? s.activeTab : ''}`} onClick={() => setTab('preset')}>
-          Hazır Sesler
+          AI Sesler
         </button>
         <button className={`${s.tab} ${tab === 'el' ? s.activeTab : ''}`} onClick={() => setTab('el')}>
-          EL Sesleri
+          Hesabım
         </button>
       </div>
 
       <div className={s.body}>
         <div className={s.activeVoiceBanner}>
-          <span>🎙</span>
-          <span>Aktif: <strong>{activeLabel}</strong></span>
+          <span className={s.bannerDot}/>
+          <p className={s.bannerText}>Aktif ses: <strong>{activeLabel}</strong></p>
         </div>
 
-        {!hasKey && (
-          <p className={s.warn}>⚠ Ayarlar'dan ElevenLabs API anahtarı ekle → Gerçek AI ses aktif olur</p>
+        {!hasKey && tab === 'preset' && (
+          <p className={s.warn}>⚠ Ayarlar'dan ElevenLabs API anahtarı ekle → Gerçek AI dönüşüm aktif olur</p>
         )}
 
         {tab === 'preset' && (
           <>
-            <p className={s.sectionLabel}>Hazır AI Sesleri</p>
-            <div className={s.grid}>
-              {VOICE_PRESETS.map(p => {
-                const isActive = !activeCustomId && activePresetId === p.id
-                return (
-                  <button
-                    key={p.id}
-                    className={`${s.card} ${isActive ? s.active : ''}`}
-                    onClick={() => onSelectPreset(p.id)}
-                  >
-                    <span className={s.emoji}>{p.emoji}</span>
-                    <span className={s.name}>{p.label}</span>
-                    <span className={s.mode}>{p.elVoiceId && hasKey ? 'AI' : p.robot ? 'FX' : p.pitch !== 1 ? 'Pitch' : 'Ham'}</span>
-                    {isActive && <span className={s.check}>✓</span>}
-                  </button>
-                )
-              })}
+            <div className={s.section}>
+              <p className={s.sectionLabel}>Kadın Sesleri</p>
+              <div className={s.femaleGrid}>
+                {femaleVoices.map(p => {
+                  const isActive = !activeCustomId && activePresetId === p.id
+                  return (
+                    <button
+                      key={p.id}
+                      className={`${s.femaleCard} ${isActive ? s.active : ''}`}
+                      style={{
+                        background: `${p.color}10`,
+                        borderColor: isActive ? p.color : 'rgba(255,255,255,0.07)',
+                        ['--card-color' as string]: p.color,
+                        ['--card-gradient' as string]: `linear-gradient(135deg, ${p.color}, transparent)`,
+                      }}
+                      onClick={() => onSelectPreset(p.id)}
+                    >
+                      <div className={s.cardGlow}/>
+                      <span className={s.cardEmoji}>{p.emoji}</span>
+                      <div className={s.cardBottom}>
+                        <p className={s.cardName}>{p.label}</p>
+                        <p className={s.cardDesc}>{p.desc}</p>
+                      </div>
+                      {isActive && <span className={s.activeCheck} style={{ background: p.color }}>✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className={s.section}>
+              <p className={s.sectionLabel}>Diğer Sesler</p>
+              <div className={s.smallGrid}>
+                {otherVoices.map(p => {
+                  const isActive = !activeCustomId && activePresetId === p.id
+                  return (
+                    <button
+                      key={p.id}
+                      className={`${s.smallCard} ${isActive ? s.active : ''}`}
+                      style={{ ['--card-color' as string]: p.color }}
+                      onClick={() => onSelectPreset(p.id)}
+                    >
+                      <span className={s.smallEmoji}>{p.emoji}</span>
+                      <span className={s.smallName}>{p.label}</span>
+                      <span className={s.smallDesc}>{p.desc}</span>
+                      {isActive && <span className={s.smallCheck}>✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </>
         )}
@@ -102,9 +135,7 @@ export default function VoiceScreen({
 
             {elError && <p className={s.errorMsg}>{elError}</p>}
 
-            {!hasKey && (
-              <p className={s.empty}>API anahtarı gerekli.<br/>Ayarlar → ElevenLabs Key</p>
-            )}
+            {!hasKey && <p className={s.empty}>API anahtarı gerekli.<br/>Ayarlar → ElevenLabs Key</p>}
 
             {hasKey && elVoices.length === 0 && !elLoading && (
               <p className={s.empty}>Sesler yüklenmedi.<br/>"Yükle" butonuna bas.</p>
