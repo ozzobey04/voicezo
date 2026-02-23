@@ -28,7 +28,7 @@ workflows:
           failure: true
 
   ios-build:
-    name: VOICEZO iOS
+    name: VOICEZO iOS (Unsigned)
     max_build_duration: 60
     environment:
       node: 20
@@ -37,34 +37,53 @@ workflows:
     scripts:
       - name: Install dependencies
         script: npm ci
-      - name: Build web
+
+      - name: Build web app
         script: npm run build
-      - name: Capacitor add iOS
+
+      - name: Capacitor add & sync iOS
         script: |
           npx cap add ios || true
           npx cap sync ios
-      - name: Install pods
+
+      - name: Install CocoaPods
         script: |
           cd ios/App
-          pod install
-      - name: Build unsigned IPA
+          pod install --repo-update
+
+      - name: Set bundle ID
+        script: |
+          /usr/libexec/PlistBuddy -c \
+            "Set :CFBundleIdentifier com.voicezo.app" \
+            ios/App/App/Info.plist
+
+      - name: Build & archive (unsigned)
         script: |
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
+            -sdk iphoneos \
             -configuration Release \
-            -archivePath build/App.xcarchive \
+            -archivePath "$CM_BUILD_DIR/App.xcarchive" \
             archive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-          xcodebuild \
-            -exportArchive \
-            -archivePath build/App.xcarchive \
-            -exportPath build/ipa \
-            -exportOptionsPlist ios/ExportOptions.plist
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            | xcpretty
+
+      - name: Export unsigned IPA
+        script: |
+          mkdir -p "$CM_BUILD_DIR/ipa"
+          cd "$CM_BUILD_DIR/App.xcarchive/Products/Applications"
+          mkdir Payload
+          cp -r App.app Payload/
+          zip -r "$CM_BUILD_DIR/ipa/VOICEZO.ipa" Payload
+          rm -rf Payload
+
     artifacts:
-      - build/ipa/*.ipa
+      - $CM_BUILD_DIR/ipa/VOICEZO.ipa
+
     publishing:
       email:
         recipients:
