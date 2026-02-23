@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Logo from './components/Logo'
 import BottomNav from './components/BottomNav'
 import CallScreen from './components/CallScreen'
@@ -10,6 +10,7 @@ import IncomingCall from './components/IncomingCall'
 import { useVoiceChat } from './hooks/useVoiceChat'
 import { useElevenLabs } from './hooks/useElevenLabs'
 import { useRecorder } from './hooks/useRecorder'
+import { stsOnce } from './hooks/useSTS'
 import { VOICE_PRESETS } from './voicePresets'
 import type { VoicePresetId } from './voicePresets'
 import './App.css'
@@ -24,16 +25,21 @@ function initKey() {
 }
 
 export default function App() {
-  const [tab, setTab]           = useState<Tab>('call')
-  const [presetId, setPresetId] = useState<VoicePresetId>('normal')
-  const [apiKey, setApiKey]     = useState<string>(initKey)
+  const [tab, setTab]                     = useState<Tab>('call')
+  const [presetId, setPresetId]           = useState<VoicePresetId>('normal')
+  const [customVoiceId, setCustomVoiceId] = useState<string | null>(null)
+  const [customVoiceName, setCustomName]  = useState<string | null>(null)
+  const [apiKey, setApiKey]               = useState<string>(initKey)
 
   const activePreset = VOICE_PRESETS.find(p => p.id === presetId)!
+
+  const activeVoiceName = customVoiceName
+    ?? `${activePreset.emoji} ${activePreset.label}`
 
   const {
     callState, myId, volume, remoteVolume,
     incomingCallerId, converting, call, answer, reject, hangUp,
-  } = useVoiceChat(activePreset, apiKey)
+  } = useVoiceChat(activePreset, apiKey, customVoiceId)
 
   const {
     voices, loading: elLoad, error: elErr,
@@ -49,9 +55,26 @@ export default function App() {
     setApiKey(k); localStorage.setItem('el_key', k)
   }
 
+  const handleSelectPreset = (id: VoicePresetId) => {
+    setPresetId(id); setCustomVoiceId(null); setCustomName(null)
+  }
+
+  const handleSelectCustom = (voiceId: string, name: string) => {
+    setCustomVoiceId(voiceId); setCustomName(name)
+  }
+
   const handleCloneFromRecord = async (name: string, blob: Blob) => {
     await cloneVoice(name, [blob])
   }
+
+  const handleTestVoice = useCallback(async (blob: Blob): Promise<string | null> => {
+    const voiceId = customVoiceId ?? activePreset.elVoiceId
+    if (!voiceId || !apiKey) return null
+    const ab = await stsOnce(blob, voiceId, apiKey)
+    if (!ab) return null
+    const audioBlob = new Blob([ab], { type: 'audio/mpeg' })
+    return URL.createObjectURL(audioBlob)
+  }, [customVoiceId, activePreset, apiKey])
 
   return (
     <div className="app">
@@ -62,7 +85,7 @@ export default function App() {
       <header className="header">
         <Logo />
         <span style={{ fontSize: '0.7rem', color: 'var(--muted)', letterSpacing: '0.08em' }}>
-          {activePreset.emoji} {activePreset.label}
+          {customVoiceName ? `✦ ${customVoiceName}` : `${activePreset.emoji} ${activePreset.label}`}
         </span>
       </header>
 
@@ -82,8 +105,15 @@ export default function App() {
         )}
         {tab === 'voice' && (
           <VoiceScreen
-            activeId={presetId}
-            onChange={setPresetId}
+            activePresetId={presetId}
+            activeCustomId={customVoiceId}
+            activeCustomName={customVoiceName}
+            onSelectPreset={handleSelectPreset}
+            onSelectCustom={handleSelectCustom}
+            elVoices={voices}
+            elLoading={elLoad}
+            elError={elErr}
+            onFetchVoices={fetchVoices}
             hasKey={!!apiKey}
           />
         )}
@@ -97,6 +127,8 @@ export default function App() {
             onSave={recSave}
             onRemove={recRemove}
             onClone={handleCloneFromRecord}
+            onTest={handleTestVoice}
+            activeVoiceName={activeVoiceName}
             hasKey={!!apiKey}
             cloning={elLoad}
           />

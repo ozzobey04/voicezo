@@ -1,18 +1,45 @@
 .screen {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px 20px;
+  gap: 0;
   padding-bottom: 100px;
   overflow-y: auto;
+  height: 100%;
 }
 
-.title {
-  font-size: 0.72rem;
-  font-weight: 600;
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  gap: 0;
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
   color: var(--muted);
-  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 14px 0;
+  cursor: pointer;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 200ms, border-color 200ms;
+}
+
+.tab.activeTab {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.body {
+  padding: 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .warn {
@@ -25,6 +52,15 @@
   line-height: 1.5;
 }
 
+.sectionLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* --- Preset grid --- */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -41,6 +77,7 @@
   align-items: center;
   gap: 5px;
   position: relative;
+  cursor: pointer;
   transition: border-color 200ms, background 200ms;
 }
 
@@ -61,26 +98,158 @@
   font-weight: 700;
 }
 
-.infoCard {
+/* --- EL Voice list --- */
+.searchRow {
+  display: flex;
+  gap: 8px;
+}
+
+.searchInput {
+  flex: 1;
   background: var(--bg2);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.84rem;
+  padding: 9px 12px;
+  outline: none;
+}
+
+.searchInput:focus { border-color: var(--accent); }
+
+.fetchBtn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 150ms;
+}
+
+.fetchBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.voiceList {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.infoTitle {
-  font-size: 0.78rem;
+.voiceItem {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 200ms, background 200ms;
+}
+
+.voiceItem.active {
+  border-color: var(--accent);
+  background: rgba(108,99,255,0.08);
+}
+
+.voiceAvatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.voiceInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.voiceName {
+  font-size: 0.84rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.6);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.infoText {
-  font-size: 0.78rem;
+.voiceMeta {
+  font-size: 0.68rem;
   color: var(--muted);
-  line-height: 1.55;
+  margin-top: 2px;
 }
 
-.infoText strong { color: rgba(255,255,255,0.5); }
+.voiceActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.previewBtn {
+  background: var(--bg3, #2a2a3e);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.72rem;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+.previewBtn:hover { background: var(--border); }
+
+.selectBtn {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.selectedBadge {
+  background: rgba(108,99,255,0.15);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 5px 10px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding: 24px 0;
+  line-height: 1.6;
+}
+
+.errorMsg {
+  color: var(--red, #f87171);
+  font-size: 0.78rem;
+  padding: 8px 12px;
+  background: rgba(248,113,113,0.08);
+  border-radius: 8px;
+}
+
+.activeVoiceBanner {
+  background: rgba(108,99,255,0.1);
+  border: 1px solid rgba(108,99,255,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

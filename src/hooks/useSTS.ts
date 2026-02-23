@@ -3,6 +3,22 @@ import type { VoicePreset } from '../voicePresets'
 const EL_BASE = 'https://api.elevenlabs.io/v1'
 const CHUNK_MS = 2500
 
+export async function stsOnce(blob: Blob, voiceId: string, apiKey: string): Promise<ArrayBuffer | null> {
+  try {
+    const form = new FormData()
+    form.append('audio', blob, 'sample.webm')
+    form.append('model_id', 'eleven_english_sts_v2')
+    form.append('voice_settings', JSON.stringify({ stability: 0.5, similarity_boost: 0.8 }))
+    const res = await fetch(`${EL_BASE}/speech-to-speech/${voiceId}/stream`, {
+      method: 'POST',
+      headers: { 'xi-api-key': apiKey },
+      body: form,
+    })
+    if (!res.ok) return null
+    return res.arrayBuffer()
+  } catch { return null }
+}
+
 export interface STSResult {
   processedStream: MediaStream
   stop: () => void

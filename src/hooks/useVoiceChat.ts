@@ -5,7 +5,7 @@ import { buildSTSChain } from './useSTS'
 
 export type CallState = 'idle' | 'ready' | 'calling' | 'incoming' | 'connected' | 'error'
 
-export function useVoiceChat(activePreset: VoicePreset, apiKey: string) {
+export function useVoiceChat(activePreset: VoicePreset, apiKey: string, voiceIdOverride?: string | null) {
   const [callState, setCallState]               = useState<CallState>('idle')
   const [myId, setMyId]                         = useState('')
   const [volume, setVolume]                     = useState(0)
@@ -37,10 +37,13 @@ export function useVoiceChat(activePreset: VoicePreset, apiKey: string) {
   }, [])
 
   const buildFX = useCallback(async (raw: MediaStream): Promise<MediaStream> => {
-    const result = await buildSTSChain(raw, activePreset, apiKey)
+    const effectivePreset = voiceIdOverride
+      ? { ...activePreset, elVoiceId: voiceIdOverride }
+      : activePreset
+    const result = await buildSTSChain(raw, effectivePreset, apiKey)
     stsStopRef.current = result.stop
     return result.processedStream
-  }, [activePreset, apiKey])
+  }, [activePreset, apiKey, voiceIdOverride])
 
   const stopCall = useCallback(() => {
     cancelAnimationFrame(animRef.current)

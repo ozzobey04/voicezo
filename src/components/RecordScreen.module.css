@@ -216,6 +216,47 @@
 .cloneBtn:not(:disabled):hover { background: rgba(108,99,255,0.14); }
 .cloneBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+.testRow {
+  display: flex;
+}
+
+.testBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(16,185,129,0.3);
+  background: rgba(16,185,129,0.07);
+  color: #10b981;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 200ms, opacity 200ms;
+}
+
+.testBtn:not(:disabled):hover { background: rgba(16,185,129,0.14); }
+.testBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.testResult {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.testLabel {
+  font-size: 0.7rem;
+  color: #10b981;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.itemActions {
+  display: flex;
+  gap: 8px;
+}
+
+.itemActions .testBtn { flex: 1; }
+.itemActions .cloneBtn { flex: 1; }
+
 .noKey {
   font-size: 0.72rem;
   color: var(--muted);
