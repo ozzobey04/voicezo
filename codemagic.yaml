@@ -41,22 +41,25 @@ workflows:
       - name: Build web app
         script: npm run build
 
-      - name: Capacitor add iOS
+      - name: Capacitor add & sync iOS
         script: |
           rm -rf ios
           npx cap add ios
-          echo "--- ios/ contents after cap add ---"
-          ls ios/
-          echo "--- ios/App/ contents ---"
-          ls ios/App/
+          echo "=== ios/App contents ==="
+          ls -la ios/App/ || echo "ios/App not found!"
+          npx cap sync ios
 
-      - name: Capacitor sync iOS
-        script: npx cap sync ios
+      - name: Ensure Podfile exists
+        script: |
+          if [ ! -f ios/App/Podfile ]; then
+            echo "Podfile missing - copying from @capacitor/ios template"
+            cp node_modules/@capacitor/ios/ios-template/App/Podfile ios/App/Podfile
+          fi
+          echo "=== Podfile contents ==="
+          cat ios/App/Podfile
 
       - name: Install CocoaPods
         script: |
-          echo "--- Podfile check ---"
-          ls ios/App/Podfile
           cd ios/App
           pod install --repo-update
 
