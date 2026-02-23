@@ -13,7 +13,7 @@ import { useRecorder } from './hooks/useRecorder'
 import { stsOnce, loadSTSSettings, saveSTSSettings } from './hooks/useSTS'
 import type { STSSettings } from './hooks/useSTS'
 import { VOICE_PRESETS } from './voicePresets'
-import type { VoicePresetId } from './voicePresets'
+import type { VoicePresetId, VoicePresetSettings } from './voicePresets'
 import './App.css'
 
 const DEFAULT_KEY = 'sk_e448dded4b4b84d602851bc889fb9537a28ac353f518e226'
@@ -81,9 +81,10 @@ export default function App() {
     return URL.createObjectURL(new Blob([ab], { type: 'audio/mpeg' }))
   }, [customVoiceId, activePreset, apiKey, stsSettings])
 
-  const handleLabTest = async (blob: Blob, voiceId: string): Promise<string | null> => {
+  const handleLabTest = async (blob: Blob, voiceId: string, customSettings?: VoicePresetSettings | null): Promise<string | null> => {
     const preset = VOICE_PRESETS.find(p => p.elVoiceId === voiceId)
-    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings, preset?.voiceSettings ?? null)
+    const settingsToUse = customSettings !== undefined ? customSettings : (preset?.voiceSettings ?? null)
+    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings, settingsToUse)
     if (!ab) return null
     return URL.createObjectURL(new Blob([ab], { type: 'audio/mpeg' }))
   }
@@ -151,9 +152,6 @@ export default function App() {
         {tab === 'lab' && (
           <LabScreen
             apiKey={apiKey}
-            elVoices={voices}
-            onFetchVoices={fetchVoices}
-            elLoading={elLoad}
             onTest={handleLabTest}
           />
         )}

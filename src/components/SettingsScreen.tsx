@@ -22,14 +22,6 @@ const MODEL_OPTIONS = [
   { value: 'eleven_english_sts_v2',       label: 'İngilizce v2',            desc: 'Sadece İngilizce, biraz daha hızlı' },
 ]
 
-const LANG_OPTIONS = [
-  { value: 'tr', label: '🇹🇷 Türkçe' },
-  { value: 'en', label: '🇺🇸 İngilizce' },
-  { value: 'de', label: '🇩🇪 Almanca' },
-  { value: 'fr', label: '🇫🇷 Fransızca' },
-  { value: 'es', label: '🇪🇸 İspanyolca' },
-  { value: 'ar', label: '🇸🇦 Arapça' },
-]
 
 export default function SettingsScreen({
   apiKey, onApiKey, stsSettings, onStsSettings, onClearRecordings, recordingCount
@@ -153,18 +145,6 @@ export default function SettingsScreen({
             >
               <span className={s.optionLabel}>{o.label}</span>
               <span className={s.optionDesc}>{o.desc}</span>
-            </button>
-          ))}
-        </div>
-        <p className={s.cardDesc} style={{ paddingTop: 4 }}>Konuşma Dili</p>
-        <div className={s.langGrid}>
-          {LANG_OPTIONS.map(l => (
-            <button
-              key={l.value}
-              className={`${s.langBtn} ${stsSettings.languageCode === l.value ? s.langActive : ''}`}
-              onClick={() => update({ languageCode: l.value })}
-            >
-              {l.label}
             </button>
           ))}
         </div>

@@ -26,44 +26,44 @@ export interface VoicePreset {
 
 export const VOICE_PRESETS: VoicePreset[] = [
   // ── KADIN SESLERİ ──────────────────────────────────────────────────
-  // Rachel: Sakin, profesyonel — düşük stabilite = insan gibi küçük titremeler
+  // Rachel: STS için optimize — daha yüksek stabilite, doğal titreme için style
   {
     id: 'rachel', label: 'Rachel', emoji: '👩', desc: 'Sakin & profesyonel',
     category: 'female', color: '#e879f9',
     elVoiceId: '21m00Tcm4TlvDq8ikWAM',
-    voiceSettings: { stability: 0.12, similarity: 0.93, style: 0.18 },
+    voiceSettings: { stability: 0.35, similarity: 0.85, style: 0.20 },
     pitch: 1.55, robot: false, ringFreq: 0,
   },
-  // Bella: Yumuşak, genç — çok doğal, yüksek benzerlik
+  // Bella: En yumuşak kadın sesi — STS'de similarity biraz düşük tutulmalı
   {
     id: 'bella', label: 'Bella', emoji: '🌸', desc: 'Yumuşak & genç',
     category: 'female', color: '#f472b6',
     elVoiceId: 'EXAVITQu4vr4xnSDxMaL',
-    voiceSettings: { stability: 0.10, similarity: 0.95, style: 0.12 },
+    voiceSettings: { stability: 0.30, similarity: 0.82, style: 0.15 },
     pitch: 1.6, robot: false, ringFreq: 0,
   },
-  // Elli: Genç, duygusal — stil yüksek, çok canlı
+  // Elli: Canlı, dinamik — daha fazla style ifadesi
   {
     id: 'elli', label: 'Elli', emoji: '✨', desc: 'Canlı & duygusal',
     category: 'female', color: '#fb923c',
     elVoiceId: 'MF3mGyEYCl7XYWbV9V6O',
-    voiceSettings: { stability: 0.08, similarity: 0.90, style: 0.30 },
+    voiceSettings: { stability: 0.28, similarity: 0.80, style: 0.30 },
     pitch: 1.7, robot: false, ringFreq: 0,
   },
-  // Dorothy: Sıcak, olgun — biraz daha stabil ama yine doğal
+  // Dorothy: Olgun ses — biraz daha stabil
   {
     id: 'dorothy', label: 'Dorothy', emoji: '🌷', desc: 'Sıcak & olgun',
     category: 'female', color: '#f59e0b',
     elVoiceId: 'ThT5KcBeYPX3keUQqHPh',
-    voiceSettings: { stability: 0.15, similarity: 0.92, style: 0.15 },
+    voiceSettings: { stability: 0.40, similarity: 0.85, style: 0.12 },
     pitch: 1.45, robot: false, ringFreq: 0,
   },
-  // Charlotte: Otoriter, İngiliz — stil orta, berraklık öncelikli
+  // Charlotte: Güçlü, otoriter — yüksek benzerlik
   {
     id: 'charlotte', label: 'Charlotte', emoji: '👑', desc: 'Güçlü & etkileyici',
     category: 'female', color: '#a78bfa',
     elVoiceId: 'XB0fDUnXU5powFXDhCwa',
-    voiceSettings: { stability: 0.13, similarity: 0.91, style: 0.22 },
+    voiceSettings: { stability: 0.35, similarity: 0.88, style: 0.18 },
     pitch: 1.5, robot: false, ringFreq: 0,
   },
   // ── ERKEK SESLERİ ──────────────────────────────────────────────────

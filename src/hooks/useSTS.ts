@@ -7,15 +7,13 @@ export interface STSSettings {
   similarity:   number
   chunkMs:      number
   model:        string
-  languageCode: string
 }
 
 export const DEFAULT_STS: STSSettings = {
-  stability:    0.15,
-  similarity:   0.92,
+  stability:    0.40,
+  similarity:   0.85,
   chunkMs:      2500,
   model:        'eleven_multilingual_sts_v2',
-  languageCode: 'tr',
 }
 
 export function loadSTSSettings(): STSSettings {
@@ -34,11 +32,14 @@ export function saveSTSSettings(s: STSSettings) {
   localStorage.setItem('sts_settings', JSON.stringify(s))
 }
 
-function buildVoiceSettings(cfg: STSSettings, override?: VoicePresetSettings | null) {
+function buildVoiceSettings(
+  cfg: STSSettings,
+  override?: VoicePresetSettings | null
+) {
   return JSON.stringify({
     stability:         override?.stability  ?? cfg.stability,
     similarity_boost:  override?.similarity ?? cfg.similarity,
-    style:             override?.style      ?? 0.15,
+    style:             override?.style      ?? 0,
     use_speaker_boost: true,
   })
 }
@@ -53,20 +54,26 @@ export async function stsOnce(
   const cfg = settings ?? loadSTSSettings()
   try {
     const form = new FormData()
-    form.append('audio', blob, 'sample.webm')
+    form.append('audio', blob, 'audio.webm')
     form.append('model_id', cfg.model)
     form.append('voice_settings', buildVoiceSettings(cfg, presetSettings))
     form.append('output_format', 'mp3_44100_128')
-    if (cfg.languageCode) form.append('language_code', cfg.languageCode)
 
     const res = await fetch(`${EL_BASE}/speech-to-speech/${voiceId}/stream`, {
       method: 'POST',
       headers: { 'xi-api-key': apiKey },
       body: form,
     })
-    if (!res.ok) return null
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '')
+      console.error('STS error', res.status, errText)
+      return null
+    }
     return res.arrayBuffer()
-  } catch { return null }
+  } catch (e) {
+    console.error('STS exception', e)
+    return null
+  }
 }
 
 export interface STSResult {
@@ -90,7 +97,7 @@ export async function buildSTSChain(
     return { processedStream: dest.stream, stop: () => ctx.close() }
   }
 
-  let stopped = false
+  let stopped  = false
   let playHead = ctx.currentTime + 0.3
   const recorder = new MediaRecorder(rawStream, { mimeType: 'audio/webm' })
   const chunks: Blob[] = []
@@ -98,22 +105,25 @@ export async function buildSTSChain(
   const scheduleNext = () => {
     if (stopped) return
     recorder.start()
-    setTimeout(() => { if (!stopped && recorder.state !== 'inactive') recorder.stop() }, cfg.chunkMs)
+    setTimeout(() => {
+      if (!stopped && recorder.state !== 'inactive') recorder.stop()
+    }, cfg.chunkMs)
   }
 
   recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data) }
 
   recorder.onstop = async () => {
-    if (stopped || chunks.length === 0) { if (!stopped) scheduleNext(); return }
+    if (stopped || chunks.length === 0) {
+      if (!stopped) scheduleNext()
+      return
+    }
     const blob = new Blob(chunks.splice(0), { type: 'audio/webm' })
-
     try {
       const form = new FormData()
       form.append('audio', blob, 'chunk.webm')
       form.append('model_id', cfg.model)
       form.append('voice_settings', buildVoiceSettings(cfg, preset.voiceSettings))
       form.append('output_format', 'mp3_44100_128')
-      if (cfg.languageCode) form.append('language_code', cfg.languageCode)
 
       const res = await fetch(`${EL_BASE}/speech-to-speech/${preset.elVoiceId}/stream`, {
         method: 'POST',
@@ -130,7 +140,7 @@ export async function buildSTSChain(
           if (value) parts.push(value)
         }
         const total = parts.reduce((s, p) => s + p.byteLength, 0)
-        const buf = new Uint8Array(total)
+        const buf   = new Uint8Array(total)
         let off = 0
         for (const p of parts) { buf.set(p, off); off += p.byteLength }
 
@@ -142,7 +152,7 @@ export async function buildSTSChain(
         srcNode.start(when)
         playHead = when + audioBuf.duration
       }
-    } catch (_) { /* sessizce geç */ }
+    } catch (e) { console.error('chain sts error', e) }
 
     if (!stopped) scheduleNext()
   }
