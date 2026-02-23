@@ -10,7 +10,8 @@ import IncomingCall from './components/IncomingCall'
 import { useVoiceChat } from './hooks/useVoiceChat'
 import { useElevenLabs } from './hooks/useElevenLabs'
 import { useRecorder } from './hooks/useRecorder'
-import { stsOnce } from './hooks/useSTS'
+import { stsOnce, loadSTSSettings, saveSTSSettings } from './hooks/useSTS'
+import type { STSSettings } from './hooks/useSTS'
 import { VOICE_PRESETS } from './voicePresets'
 import type { VoicePresetId } from './voicePresets'
 import './App.css'
@@ -30,6 +31,7 @@ export default function App() {
   const [customVoiceId, setCustomVoiceId] = useState<string | null>(null)
   const [customVoiceName, setCustomName]  = useState<string | null>(null)
   const [apiKey, setApiKey]               = useState<string>(initKey)
+  const [stsSettings, setStsSettings]     = useState<STSSettings>(loadSTSSettings)
 
   const activePreset = VOICE_PRESETS.find(p => p.id === presetId)!
 
@@ -55,6 +57,10 @@ export default function App() {
     setApiKey(k); localStorage.setItem('el_key', k)
   }
 
+  const handleSTSSettings = (s: STSSettings) => {
+    setStsSettings(s); saveSTSSettings(s)
+  }
+
   const handleSelectPreset = (id: VoicePresetId) => {
     setPresetId(id); setCustomVoiceId(null); setCustomName(null)
   }
@@ -70,11 +76,11 @@ export default function App() {
   const handleTestVoice = useCallback(async (blob: Blob): Promise<string | null> => {
     const voiceId = customVoiceId ?? activePreset.elVoiceId
     if (!voiceId || !apiKey) return null
-    const ab = await stsOnce(blob, voiceId, apiKey)
+    const ab = await stsOnce(blob, voiceId, apiKey, stsSettings)
     if (!ab) return null
     const audioBlob = new Blob([ab], { type: 'audio/mpeg' })
     return URL.createObjectURL(audioBlob)
-  }, [customVoiceId, activePreset, apiKey])
+  }, [customVoiceId, activePreset, apiKey, stsSettings])
 
   return (
     <div className="app">
@@ -144,7 +150,14 @@ export default function App() {
           />
         )}
         {tab === 'settings' && (
-          <SettingsScreen apiKey={apiKey} onChange={handleApiKey} />
+          <SettingsScreen
+            apiKey={apiKey}
+            onApiKey={handleApiKey}
+            stsSettings={stsSettings}
+            onStsSettings={handleSTSSettings}
+            onClearRecordings={recRemove ? () => recordings.forEach(r => recRemove(r.id)) : undefined}
+            recordingCount={recordings.length}
+          />
         )}
       </div>
 

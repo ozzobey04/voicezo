@@ -1,14 +1,41 @@
 import type { VoicePreset } from '../voicePresets'
 
 const EL_BASE = 'https://api.elevenlabs.io/v1'
-const CHUNK_MS = 2500
 
-export async function stsOnce(blob: Blob, voiceId: string, apiKey: string): Promise<ArrayBuffer | null> {
+export interface STSSettings {
+  stability:   number
+  similarity:  number
+  chunkMs:     number
+  model:       string
+}
+
+export const DEFAULT_STS: STSSettings = {
+  stability:  0.5,
+  similarity: 0.8,
+  chunkMs:    2500,
+  model:      'eleven_english_sts_v2',
+}
+
+export function loadSTSSettings(): STSSettings {
+  try {
+    const s = localStorage.getItem('sts_settings')
+    return s ? { ...DEFAULT_STS, ...JSON.parse(s) } : DEFAULT_STS
+  } catch { return DEFAULT_STS }
+}
+
+export function saveSTSSettings(s: STSSettings) {
+  localStorage.setItem('sts_settings', JSON.stringify(s))
+}
+
+export async function stsOnce(
+  blob: Blob, voiceId: string, apiKey: string, settings?: STSSettings
+): Promise<ArrayBuffer | null> {
+  const cfg = settings ?? loadSTSSettings()
   try {
     const form = new FormData()
     form.append('audio', blob, 'sample.webm')
-    form.append('model_id', 'eleven_english_sts_v2')
-    form.append('voice_settings', JSON.stringify({ stability: 0.5, similarity_boost: 0.8 }))
+    form.append('model_id', cfg.model)
+    form.append('voice_settings', JSON.stringify({ stability: cfg.stability, similarity_boost: cfg.similarity }))
     const res = await fetch(`${EL_BASE}/speech-to-speech/${voiceId}/stream`, {
       method: 'POST',
       headers: { 'xi-api-key': apiKey },
@@ -28,7 +55,9 @@ export async function buildSTSChain(
   rawStream: MediaStream,
   preset: VoicePreset,
   apiKey: string,
+  settings?: STSSettings,
 ): Promise<STSResult> {
+  const cfg  = settings ?? loadSTSSettings()
   const ctx  = new AudioContext({ sampleRate: 44100 })
   const dest = ctx.createMediaStreamDestination()
 
@@ -56,7 +85,7 @@ export async function buildSTSChain(
   const scheduleNext = () => {
     if (stopped) return
     recorder.start()
-    setTimeout(() => { if (!stopped && recorder.state !== 'inactive') recorder.stop() }, CHUNK_MS)
+    setTimeout(() => { if (!stopped && recorder.state !== 'inactive') recorder.stop() }, cfg.chunkMs)
   }
 
   recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data) }
@@ -68,8 +97,8 @@ export async function buildSTSChain(
     try {
       const form = new FormData()
       form.append('audio', blob, 'chunk.webm')
-      form.append('model_id', 'eleven_english_sts_v2')
-      form.append('voice_settings', JSON.stringify({ stability: 0.5, similarity_boost: 0.8 }))
+      form.append('model_id', cfg.model)
+      form.append('voice_settings', JSON.stringify({ stability: cfg.stability, similarity_boost: cfg.similarity }))
 
       const res = await fetch(`${EL_BASE}/speech-to-speech/${preset.elVoiceId}/stream`, {
         method: 'POST',
